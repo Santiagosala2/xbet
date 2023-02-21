@@ -6,13 +6,14 @@ import { getUserData , getFriends } from "../../api/user";
 import Image from 'next/image';
 import { useRouter } from 'next/router'
 import SuccessAlert from "../../../components/SuccessAlert/SuccessAlert";
+import SearchBar from "../../../components/SearchBar/SearchBar";
 
 type AddFriend = {
     toEmail: string,
     fromEmail: string
 }
 
-type User = {
+export type User = {
     friendshipId : number,
     email: string,
     firstName: string
@@ -26,7 +27,7 @@ function Friends({ data , friends }: any) {
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.value.length > 0) {
-           return user.services.searchUsers(e.target.value, (res: User[]) => {
+            user.services.searchUsers(e.target.value, (res: User[]) => {
             setUsers(res);
             setSearchValue(e.target.value);
         });
@@ -95,15 +96,7 @@ function Friends({ data , friends }: any) {
                      </div>
                     {/* <button type="button" className="rounded-lg font-sans text-sm font-semibold py-2 px-2 bg-slate-900 text-white hover:bg-slate-700 my-3" >Deposit</button> */}
                     <label className="block text-sm font-semibold leading-6 text-gray-900 mb-2" >Find Friends</label>
-                    <div className="flex-auto  border rounded-md  border-slate-300 px-1">
-                        <Image className="inline-block h-4 w-4 m-1" src={"/searchIcon.svg"} alt={"search icon"} width={10} height={10} />
-                        <input
-                            type="text"
-                            aria-label={"Find Friends"}
-                            className={`inline-block appearance-none text-slate-900 focus:outline-none text-sm`}
-                            onChange={(e) => handleChange(e)}
-                        />
-                    </div>
+                    <SearchBar inputName="Find Friends" onChange={(e) => handleChange(e)}/>
                     <div className="flow-root">
                         <ul role="list" className="divide-y divide-gray-200 dark:divide-gray-700">
                             {users.map(u => {

@@ -41,13 +41,20 @@ var user_1 = require("../api/user");
 var auth_1 = require("../api/auth");
 var Layout_1 = require("../../components/Layout/Layout");
 var react_1 = require("react");
+var Card_1 = require("../../components/Card/Card");
+var router_1 = require("next/router");
 function Dashboard(_a) {
     var data = _a.data;
+    var router = router_1.useRouter();
     var _b = react_1.useState(data.balance), initialBalance = _b[0], setInitialBalance = _b[1];
     return (React.createElement(Layout_1["default"], { userBalance: initialBalance },
-        React.createElement("div", { className: 'text-black mx-4' },
-            "Welcome! ",
-            data.firstName)));
+        React.createElement("div", { className: 'm-7' },
+            React.createElement("h5", { className: 'text-2xl text-slate-900 my-2' },
+                "Welcome! ",
+                data.firstName),
+            React.createElement("h2", { className: "text-4xl font-bold text-slate-900 mt-14" }, "Make a bet"),
+            React.createElement(Card_1["default"], { name: 'Weather', path: '/weatherIcon.svg', onClick: function () { return router.push('/dashboard/bet/weather'); } }),
+            React.createElement(Card_1["default"], { name: 'Manual', path: '/manualIcon.svg' }))));
 }
 function getServerSideProps(context) {
     return __awaiter(this, void 0, void 0, function () {

@@ -42,8 +42,8 @@ var Layout_1 = require("../../../components/Layout/Layout");
 var user_1 = require("../../../services/user");
 var auth_1 = require("../../api/auth");
 var user_2 = require("../../api/user");
-var image_1 = require("next/image");
 var SuccessAlert_1 = require("../../../components/SuccessAlert/SuccessAlert");
+var SearchBar_1 = require("../../../components/SearchBar/SearchBar");
 function Friends(_a) {
     var data = _a.data, friends = _a.friends;
     var _b = react_1.useState([]), users = _b[0], setUsers = _b[1];
@@ -51,7 +51,7 @@ function Friends(_a) {
     var _d = react_1.useState(false), showAlert = _d[0], setShowAlert = _d[1];
     var handleChange = function (e) {
         if (e.target.value.length > 0) {
-            return user_1["default"].services.searchUsers(e.target.value, function (res) {
+            user_1["default"].services.searchUsers(e.target.value, function (res) {
                 setUsers(res);
                 setSearchValue(e.target.value);
             });
@@ -103,9 +103,7 @@ function Friends(_a) {
                     React.createElement("div", { className: "h-full w-full flex justify-center items-center" },
                         React.createElement("p", { className: "text-sm" }, f.firstName)))); })),
                 React.createElement("label", { className: "block text-sm font-semibold leading-6 text-gray-900 mb-2" }, "Find Friends"),
-                React.createElement("div", { className: "flex-auto  border rounded-md  border-slate-300 px-1" },
-                    React.createElement(image_1["default"], { className: "inline-block h-4 w-4 m-1", src: "/searchIcon.svg", alt: "search icon", width: 10, height: 10 }),
-                    React.createElement("input", { type: "text", "aria-label": "Find Friends", className: "inline-block appearance-none text-slate-900 focus:outline-none text-sm", onChange: function (e) { return handleChange(e); } })),
+                React.createElement(SearchBar_1["default"], { inputName: "Find Friends", onChange: function (e) { return handleChange(e); } }),
                 React.createElement("div", { className: "flow-root" },
                     React.createElement("ul", { role: "list", className: "divide-y divide-gray-200 dark:divide-gray-700" }, users.map(function (u) {
                         return (React.createElement("li", { className: "py-3 sm:py-4", key: u.email },
