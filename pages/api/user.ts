@@ -30,6 +30,10 @@ export async function getFriends(req:any) {
     return response.data
 }
 
+export async function getPendingBets() {
+    
+}
+
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<any>) {

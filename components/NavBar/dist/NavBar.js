@@ -21,7 +21,7 @@ var NavBar = function (_a) {
     return (react_1["default"].createElement(react_1["default"].Fragment, null,
         react_1["default"].createElement("div", { className: "static top-0 left-0 right-0 bg-slate-900 text-white" },
             react_1["default"].createElement("div", { className: "flex justify-center items-center p-2" },
-                react_1["default"].createElement("div", { className: "basis-4/5 font-semibold" }, "BetMate"),
+                react_1["default"].createElement("div", { className: "basis-4/5 font-semibold cursor-pointer", onClick: function () { return router.push('/dashboard'); } }, "BetMate"),
                 react_1["default"].createElement("div", { className: "basis-1/5" },
                     react_1["default"].createElement("div", { className: 'flex justify-center items-center my-0 -mx-4' },
                         react_1["default"].createElement("div", { className: userBalanceClassName }, "$" + userBalance),

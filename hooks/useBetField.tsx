@@ -7,7 +7,8 @@ type ReturnBetField = [
     Dispatch<SetStateAction<string>>,
     (fieldName: string)=> void,
     any,
-    (field:string,value: string) => void
+    (field:string,value: string) => void,
+    () => void
 ]
 
 const useBetField = (initialOpenModal : boolean): ReturnBetField => {
@@ -29,7 +30,11 @@ const useBetField = (initialOpenModal : boolean): ReturnBetField => {
 
     }
 
-    return [openModal,setOpenModal,fieldSelected,setFieldSelected,wrapperSetOpenModal,selectedValues,handleSelectedValues]
+    function resetSelectedValues () {
+        setSelectedValues([])
+    }
+
+    return [openModal,setOpenModal,fieldSelected,setFieldSelected,wrapperSetOpenModal,selectedValues,handleSelectedValues,resetSelectedValues]
 }
 
 export default useBetField;

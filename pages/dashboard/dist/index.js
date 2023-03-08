@@ -54,7 +54,8 @@ function Dashboard(_a) {
                 data.firstName),
             React.createElement("h2", { className: "text-4xl font-bold text-slate-900 mt-14" }, "Make a bet"),
             React.createElement(Card_1["default"], { name: 'Weather', path: '/weatherIcon.svg', onClick: function () { return router.push('/dashboard/bet/weather'); } }),
-            React.createElement(Card_1["default"], { name: 'Manual', path: '/manualIcon.svg' }))));
+            React.createElement(Card_1["default"], { name: 'Manual', path: '/manualIcon.svg', onClick: function () { return router.push('/dashboard/bet/manual'); } }),
+            React.createElement("h2", { className: "text-4xl font-bold text-slate-900 mt-14" }, "Pending bets"))));
 }
 function getServerSideProps(context) {
     return __awaiter(this, void 0, void 0, function () {

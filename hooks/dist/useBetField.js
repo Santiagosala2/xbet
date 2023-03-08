@@ -25,6 +25,9 @@ var useBetField = function (initialOpenModal) {
         var selectedValue = (_a = {}, _a[field] = value, _a);
         setSelectedValues(function (selectedValues) { return (__assign(__assign({}, selectedValues), selectedValue)); });
     }
-    return [openModal, setOpenModal, fieldSelected, setFieldSelected, wrapperSetOpenModal, selectedValues, handleSelectedValues];
+    function resetSelectedValues() {
+        setSelectedValues([]);
+    }
+    return [openModal, setOpenModal, fieldSelected, setFieldSelected, wrapperSetOpenModal, selectedValues, handleSelectedValues, resetSelectedValues];
 };
 exports["default"] = useBetField;

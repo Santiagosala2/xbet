@@ -28,7 +28,7 @@ const NavBar = ({userBalance}: INavBarProps) => {
         <>
             <div className="static top-0 left-0 right-0 bg-slate-900 text-white" >
                 <div className="flex justify-center items-center p-2">
-                    <div className="basis-4/5 font-semibold">BetMate</div>
+                    <div className="basis-4/5 font-semibold cursor-pointer" onClick={() => router.push('/dashboard')} >BetMate</div>
                     <div className="basis-1/5">
                         <div className='flex justify-center items-center my-0 -mx-4'>
                             <div className={userBalanceClassName}>{`$${userBalance}`}</div>

@@ -47,7 +47,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.getFriends = exports.getUserData = void 0;
+exports.getPendingBets = exports.getFriends = exports.getUserData = void 0;
 var axios_1 = require("axios");
 var https_1 = require("https");
 function getUserData(req) {
@@ -89,6 +89,14 @@ function getFriends(req) {
     });
 }
 exports.getFriends = getFriends;
+function getPendingBets() {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            return [2 /*return*/];
+        });
+    });
+}
+exports.getPendingBets = getPendingBets;
 function handler(req, res) {
     return __awaiter(this, void 0, void 0, function () {
         var jsonData;

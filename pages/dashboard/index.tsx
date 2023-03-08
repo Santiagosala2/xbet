@@ -16,7 +16,9 @@ function Dashboard({data}:any) {
               <h5 className='text-2xl text-slate-900 my-2' >Welcome! {data.firstName}</h5>
               <h2 className="text-4xl font-bold text-slate-900 mt-14">Make a bet</h2>
               <Card name='Weather' path='/weatherIcon.svg' onClick={() => router.push('/dashboard/bet/weather')}/>
-              <Card name='Manual' path='/manualIcon.svg'/>
+              <Card name='Manual' path='/manualIcon.svg' onClick={() => router.push('/dashboard/bet/manual')} />
+              <h2 className="text-4xl font-bold text-slate-900 mt-14">Pending bets</h2>
+              
             </div>    
         </Layout> 
     )

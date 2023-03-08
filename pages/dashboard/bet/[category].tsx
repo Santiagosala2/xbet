@@ -5,8 +5,10 @@ import { useRouter } from 'next/router'
 import SearchBar from "../../../components/SearchBar/SearchBar";
 import BetField from "../../../components/BetField/BetField";
 import useBetField from "../../../hooks/useBetField";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useRef, useState , forwardRef, FunctionComponent } from "react";
 import location from "../../../services/location";
+import user from "../../../services/user"
+import SuccessAlert from "../../../components/SuccessAlert/SuccessAlert";
 
 const weatherFields = [
   {
@@ -24,6 +26,33 @@ const weatherFields = [
   {
     "name": "Friend",
     "emoji": "🧑"
+  },
+  {
+    "name": "Wager",
+    "emoji": "💸"
+  }
+]
+
+const manualFields = [
+  {
+    "name": "Name",
+    "emoji": "📛"
+  },
+  {
+    "name": "When",
+    "emoji": "❓"
+  },
+  {
+    "name": "Judge",
+    "emoji": "👩‍⚖️"
+  },
+  {
+    "name": "Friend",
+    "emoji": "🧑"
+  },
+  {
+    "name": "Wager",
+    "emoji": "💸"
   }
 ]
 
@@ -73,6 +102,52 @@ const whenOptions = [
   },
 ]
 
+type InputFieldType = {
+  type: string,
+  arialLabel: string,
+  placeHolder: string,
+  btnOnClick: (value:any,ref:any) => void
+}
+
+const InputField = forwardRef<HTMLInputElement,InputFieldType>(({ type, arialLabel, placeHolder, btnOnClick },ref) => 
+ (
+        <>
+          <div className="flex-auto  border rounded-md  border-slate-300 px-1">
+            <input
+              ref={ref}
+              type={type}
+              aria-label={arialLabel}
+              className={`inline-block appearance-none text-slate-900 focus:outline-none text-sm`}
+              placeholder={placeHolder}
+    
+            />
+          </div>
+          <button onClick={() => btnOnClick(ref,ref)} type="button" className="mt-8 text-white bg-slate-900 border border-gray-300 font-medium rounded-lg text-sm px-5 py-1 border-gray-600 disabled:bg-slate-300">Add</button>
+    
+    
+    
+        </>
+    
+  )
+)
+
+InputField.displayName = "InputField"
+
+
+type BetBody = {
+  type: string,
+  status: string,
+  wager: number,
+  name: string,
+  location?: string,
+  climate?: string,
+  when: string,
+  userEmail: string,
+  friendEmail: string,
+  judgeEmail: string,
+
+}
+
 function BetCategory({ data, friends }: any) {
   const router = useRouter()
   const { category } = router.query;
@@ -83,11 +158,18 @@ function BetCategory({ data, friends }: any) {
     setFieldSelected,
     wrapperSetOpenModal,
     selectedValues,
-    handleSelectedValues
+    handleSelectedValues,
+    resetSelectedValues
   ] = useBetField(false);
-
+  const lowerCaseCategory = typeof category === "string" ? category.toLocaleLowerCase() : category;
+  const [categoryFields, setCategoryFields] = useState(lowerCaseCategory === "weather" ? weatherFields : lowerCaseCategory === "manual" ? manualFields : [])
   const [results, setResults] = useState<string[]>([]);
-  const [filteredResults, setFilteredResults] = useState<string[]>([])
+  const [filteredResults, setFilteredResults] = useState<string[]>([]);
+  const textInputRef = useRef<any>(null);
+  const numberInputRef = useRef<any>(null);
+  const [showAlert , setShowAlert] = useState<boolean>(false);
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+
 
   const handleChangeOnSearch = (e: ChangeEvent<HTMLInputElement>, field: string) => {
     if (field === "Location") {
@@ -120,17 +202,59 @@ function BetCategory({ data, friends }: any) {
     setResults([]);
   }
 
-  const handleSelectedField = (value: string) => {
-    handleSelectedValues(fieldSelected, value);
+  const handleSelectedField = (value: string , ref?:any) => {
+    handleSelectedValues(fieldSelected, ref !== undefined ? ref.current.value:value);
     setOpenModal(false);
     setFieldSelected("");
     setFilteredResults([]);
     setResults([]);
+
+    if (ref !== undefined ) {
+      if (ref.current) {
+        ref.current.value = "";
+      }
+    }
+    
+  }
+  
+  const setTimer = (setter: Dispatch<SetStateAction<any>>) => {
+    const timer = setTimeout(() => {
+        setter(false);
+    }, 3000);
+    return () => clearTimeout(timer);
   }
 
-  const numberOfAddedValues = Object.values(selectedValues).filter(v => v !== "" ).length
+  const mapProperties = () => {
+    return { 
+      type: lowerCaseCategory as string,
+      status: "Pending",
+      userEmail: data.email,
+      friendEmail: friends.filter((f:any) => f.firstName === selectedValues.Friend)[0].email,
+      judgeEmail: lowerCaseCategory === "manual" ? friends.filter((f:any) => f.firstName === selectedValues.Judge)[0].email : "",
+      wager: Number(selectedValues.Wager),
+      name: selectedValues.Name,
+      when: selectedValues.When.split("-")[1].trim(),
+      location: selectedValues.Location,
+      climate: selectedValues.Climate
 
-  console.log(numberOfAddedValues)
+
+    }
+
+  }
+
+
+  const handlePlaceBet = () => {
+       user.services.createBet<BetBody>(mapProperties() ,(res:any) => {
+        setOpenModal(true);
+        setShowSuccess(true);
+        setShowAlert(true);
+        setTimer(setShowAlert);
+        resetSelectedValues()
+
+       })
+  }
+
+  const numberOfAddedValues = Object.values(selectedValues).filter(v => v !== "").length
 
   return (
     <Layout userBalance={data.balance}>
@@ -139,11 +263,11 @@ function BetCategory({ data, friends }: any) {
           <label className="block text-sm font-semibold leading-6 text-gray-900 mb-2 text-center" >{(typeof category) === 'string' && category ? category[0].toUpperCase() + category.slice(1) : ''}</label>
           <div className="flex flex-col gap-y-5 ">
             {
-              weatherFields.map((f, i) => <BetField key={i} name={f.name} btnOnClick={wrapperSetOpenModal} emoji={f.emoji} value={selectedValues[f.name] as string} btnResetSelectedValueClick={handleSelectedValues} />)
+              categoryFields.map((f, i) => <BetField key={i} name={f.name} btnOnClick={wrapperSetOpenModal} emoji={f.emoji} value={selectedValues[f.name] as string} btnResetSelectedValueClick={handleSelectedValues} />)
             }
           </div>
           <div className="flex items-center justify-center">
-            <button disabled={numberOfAddedValues !== weatherFields.length} type="button" className="mt-8 text-white bg-slate-900 border border-gray-300 font-medium rounded-lg text-sm px-5 py-1 border-gray-600 disabled:bg-slate-300">Place bet</button>
+            <button disabled={numberOfAddedValues !== categoryFields.length} type="button" onClick={handlePlaceBet} className="mt-8 text-white bg-slate-900 border border-gray-300 font-medium rounded-lg text-sm px-5 py-1 border-gray-600 disabled:bg-slate-300">Place bet</button>
           </div>
         </div>
       </div>
@@ -156,7 +280,7 @@ function BetCategory({ data, friends }: any) {
               </button>
             </div>
             <label className="block text-sm font-semibold leading-6 text-gray-900 mb-2" >{fieldSelected}</label>
-            {(fieldSelected === "Location" || fieldSelected === "Friend") &&
+            {(fieldSelected === "Location" || fieldSelected === "Friend" || fieldSelected === "Judge") &&
               <>
                 <SearchBar inputName={fieldSelected} onChange={(e) => handleChangeOnSearch(e, fieldSelected)} />
                 <div className="mt-4 flex flex-col gap-y-2" >
@@ -192,6 +316,37 @@ function BetCategory({ data, friends }: any) {
               </>
 
             }
+            {(fieldSelected === "Name") &&
+              <>
+                <InputField
+                  ref={textInputRef}
+                  type={"text"}
+                  arialLabel={"Name"}
+                  placeHolder={"Add name"}
+                  btnOnClick={handleSelectedField}
+                />
+              </>
+            }
+            {(fieldSelected === "Wager") &&
+              <>
+                <InputField
+                  ref={numberInputRef}
+                  type={"number"}
+                  arialLabel={"Wager"}
+                  placeHolder={"Add wager"}
+                  btnOnClick={handleSelectedField}
+                />
+              </>
+            }
+            {showSuccess &&
+               <>  
+                   
+                  <button onClick={() => router.push('/dashboard')} type="button" className="mt-8 mb-4 text-white bg-slate-900 border border-gray-300 font-medium rounded-lg text-sm px-5 py-1 border-gray-600 disabled:bg-slate-300">Go back to dashboard</button>
+                  { showAlert && <SuccessAlert message="Bet has been created successfully"/>}
+               
+               </>
+
+            }
           </div>
 
         </div>
@@ -203,12 +358,22 @@ function BetCategory({ data, friends }: any) {
 
 export async function getServerSideProps(context: any) {
   // Fetch data from external API
+  const { query } = context
+  if (query.category.toLocaleLowerCase() !== "manual" && query.category.toLocaleLowerCase() !== "weather") {
+    return {
+      notFound: true, //redirects to 404 page
+    };
+  }
+
   const authCheckResponse = await authCheck(context.req);
   let data, friends;
   if (authCheckResponse.result) {
     data = await getUserData(context.req);
     friends = await getFriends(context.req);
+    console.log(friends)
   } else {
+
+
     return {
       redirect: {
         permanent: false,

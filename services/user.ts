@@ -1,135 +1,50 @@
 
 const apiEndpoint = "https://localhost:7234";
 
-const commonHeaders = {
-    method: "POST",
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    credentials: "include",
-
-}
-
-const login = <T>(data: T, callback: (res: any) => void) => {
-    return fetch(`${apiEndpoint}/api/login`,
-        {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: "include",
-            body: JSON.stringify(data),
-        }).
-        then(res => res.json()).
-        then((res) => {
-            callback(res);
-        })
-}
-
-const register = <T>(data: T, callback: (res: any) => void) => {
-    return fetch(`${apiEndpoint}/api/register`,
-        {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        }).
-        then(res => res.json()).
-        then((res) => {
-            callback(res);
-        })
-}
-
-const logout = (callback: () => void) => {
-    return fetch(`/api/logout`,
-        {
-            method: "POST"          
-        }).
-        then(res => res.json()).
-        then((res) => {
-            console.log(res)
-            callback();
-        })
-}
-
-const deposit = <T>(data: T, callback: (res: any) => void) => {
-    return fetch(`${apiEndpoint}/api/user/deposit`,
-    {
-        method: "POST",
+const addHeaders = (method: "GET" | "POST", credentials:boolean,body?:any) => {
+    let object:any = {
+        method: method,
         headers: {
             'Content-Type': 'application/json',
-        },
-        credentials: "include",
-        body: JSON.stringify(data),
-    }).
-    then(res => res.json()).
-    then((res) => {
-        callback(res);
-    })
+        }
+    }
+
+    if (credentials) {
+        object = {
+            ...object,
+            credentials: "include"
+        }
+    }
+
+    if (body !== null) {
+        object = {
+            ...object,
+            body: JSON.stringify(body)
+        }
+    }
+
+    return object
 }
 
-const searchUsers = (value: string, callback:(res: any) => void) => {
-    return fetch(`${apiEndpoint}/api/search/user?value=${value}`,
-    {
-        method: "GET",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        credentials: "include"
-    }).
-    then(res => res.json()).
-    then((res) => {
-        callback(res);
-    })
-}
+const resolver = (prom: Promise<Response>,callback: (res: any) => void) => prom.then(res => res.json()).then((res) => callback(res));
 
-const addFriend = <T>(data: T, callback:(res: any) => void) => {
-    return fetch(`${apiEndpoint}/api/user/addFriend`,
-    {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        credentials: "include",
-        body: JSON.stringify(data)
-    }).
-    then((res) => {
-        callback(res);
-    })
-}
+const login = <T>(data: T, callback: (res: any) => void) =>  resolver(fetch( `${apiEndpoint}/api/login`, addHeaders("POST",true,data)), callback )
 
-const acceptRequest = <T>(data: T, callback:(res: any) => void) => {
-    return fetch(`${apiEndpoint}/api/user/acceptRequest`,
-    {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        credentials: "include",
-        body: JSON.stringify(data)
-    }).
-    then((res) => {
-        callback(res);
-    })
-}
+const register = <T>(data: T, callback: (res: any) => void) => resolver( fetch(`${apiEndpoint}/api/register`, addHeaders("POST",false,data)),callback)
 
-const rejectRequest = <T>(data: T, callback:(res: any) => void) => {
-    return fetch(`${apiEndpoint}/api/user/rejectRequest`,
-    {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        credentials: "include",
-        body: JSON.stringify(data)
-    }).
-    then((res) => {
-        callback(res);
-    })
-}
+const logout = (callback: () => void) =>  resolver(fetch(`/api/logout`, addHeaders("POST",false)),callback)
 
+const deposit = <T>(data: T, callback: (res: any) => void) =>  resolver(fetch(`${apiEndpoint}/api/user/deposit`, addHeaders("POST",true,data)),callback)
 
+const searchUsers = (value: string, callback:(res: any) => void) => resolver(fetch(`${apiEndpoint}/api/search/user?value=${value}`, addHeaders("GET",true)),callback)
+
+const addFriend = <T>(data: T, callback:(res: any) => void) => resolver(fetch(`${apiEndpoint}/api/user/addFriend`,  addHeaders("POST",true,data)),callback)
+
+const acceptRequest = <T>(data: T, callback:(res: any) => void) => resolver(fetch(`${apiEndpoint}/api/user/acceptRequest`, addHeaders("POST",true,data)),callback)
+
+const rejectRequest = <T>(data: T, callback:(res: any) => void) => resolver(fetch(`${apiEndpoint}/api/user/rejectRequest`, addHeaders("POST",true,data)),callback)
+
+const createBet =  <T>(data: T, callback:(res: any) => void) => resolver(fetch(`${apiEndpoint}/api/user/bets`, addHeaders("POST",true,data)),callback)
 
 const services = {
     login,
@@ -139,7 +54,8 @@ const services = {
     searchUsers,
     addFriend,
     acceptRequest,
-    rejectRequest
+    rejectRequest,
+    createBet
 }
 
 const user = {
