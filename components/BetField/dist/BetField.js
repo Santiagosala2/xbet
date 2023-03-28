@@ -6,11 +6,11 @@ var BetField = function (_a) {
     return (React.createElement("div", null,
         React.createElement("label", { className: "block text-sm font-semibold leading-6 text-gray-900 mb-2" }, name),
         React.createElement("div", { className: "flex-auto  border rounded-md  border-slate-300 p-1 " }, !renderSelectedValue ?
-            React.createElement("button", { type: "button", onClick: btnOnClick ? function () { return btnOnClick(name); } : btnOnClick, className: "text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-1 bg-slate-900 hover:text-white border-gray-600 hover:bg-slate-900 hover:border-gray-600" },
+            React.createElement("button", { type: "button", onClick: btnOnClick ? function () { return btnOnClick(name); } : btnOnClick, className: "text-slate-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-1 hover:text-white border-gray-600 hover:bg-slate-900 hover:border-gray-600" },
                 "Add ",
                 emoji)
             :
-                React.createElement("div", { className: "text-gray-900 bg-white border border-gray-300 focus:outline-none font-medium rounded-lg text-sm px-5 py-1 bg-slate-900 border-gray-600 w-fit" },
+                React.createElement("div", { className: "text-slate-900 bg-white border border-gray-300 focus:outline-none font-medium rounded-lg text-sm px-5 py-1  border-gray-600 w-fit" },
                     value,
                     React.createElement("button", { type: "button", onClick: function () { return btnResetSelectedValueClick(name, ""); }, className: "text-gray-900 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center", "data-modal-hide": "defaultModal" },
                         React.createElement("svg", { "aria-hidden": "true", className: "w-3 h-3", fill: "currentColor", viewBox: "0 0 20 20", xmlns: "http://www.w3.org/2000/svg" },

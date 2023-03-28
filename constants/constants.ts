@@ -16,3 +16,27 @@ export enum FormLabels  {
     email = "Email",
     password = "Password"
 }
+
+export const weatherTypes = [
+
+    {
+      "name": "Sunshine",
+      "emoji": "☀"
+    },
+    {
+      "name": "Cloudy",
+      "emoji": "☁"
+    },
+    {
+      "name": "Rain",
+      "emoji": "🌧"
+    },
+    {
+      "name": "Thunder",
+      "emoji": "⚡"
+    },
+    {
+      "name": "Windy",
+      "emoji": "🌫"
+    }
+  ]

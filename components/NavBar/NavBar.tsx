@@ -30,7 +30,7 @@ const NavBar = ({userBalance}: INavBarProps) => {
                 <div className="flex justify-center items-center p-2">
                     <div className="basis-4/5 font-semibold cursor-pointer" onClick={() => router.push('/dashboard')} >BetMate</div>
                     <div className="basis-1/5">
-                        <div className='flex justify-center items-center my-0 -mx-4'>
+                        <div className='flex justify-center items-center my-0 -ml-4'>
                             <div className={userBalanceClassName}>{`$${userBalance}`}</div>
                             <NavBarIcons
                                 marginXY='my-0 mx-1'

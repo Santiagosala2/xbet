@@ -30,8 +30,16 @@ export async function getFriends(req:any) {
     return response.data
 }
 
-export async function getPendingBets() {
-    
+export async function getBets(req:any) {
+    let response = await axios.get('https://localhost:7234/api/user/bets', {
+        headers:{
+            ...req.headers
+        },
+        httpsAgent: new https.Agent({
+            rejectUnauthorized: false
+        })
+    })
+    return response.data
 }
 
 export default async function handler(

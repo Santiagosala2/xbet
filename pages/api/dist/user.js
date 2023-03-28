@@ -47,7 +47,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.getPendingBets = exports.getFriends = exports.getUserData = void 0;
+exports.getBets = exports.getFriends = exports.getUserData = void 0;
 var axios_1 = require("axios");
 var https_1 = require("https");
 function getUserData(req) {
@@ -89,14 +89,25 @@ function getFriends(req) {
     });
 }
 exports.getFriends = getFriends;
-function getPendingBets() {
+function getBets(req) {
     return __awaiter(this, void 0, void 0, function () {
+        var response;
         return __generator(this, function (_a) {
-            return [2 /*return*/];
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, axios_1["default"].get('https://localhost:7234/api/user/bets', {
+                        headers: __assign({}, req.headers),
+                        httpsAgent: new https_1["default"].Agent({
+                            rejectUnauthorized: false
+                        })
+                    })];
+                case 1:
+                    response = _a.sent();
+                    return [2 /*return*/, response.data];
+            }
         });
     });
 }
-exports.getPendingBets = getPendingBets;
+exports.getBets = getBets;
 function handler(req, res) {
     return __awaiter(this, void 0, void 0, function () {
         var jsonData;

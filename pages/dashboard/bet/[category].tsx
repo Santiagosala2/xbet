@@ -9,6 +9,7 @@ import { ChangeEvent, Dispatch, SetStateAction, useRef, useState , forwardRef, F
 import location from "../../../services/location";
 import user from "../../../services/user"
 import SuccessAlert from "../../../components/SuccessAlert/SuccessAlert";
+import { weatherTypes } from "../../../constants/constants";
 
 const weatherFields = [
   {
@@ -56,29 +57,7 @@ const manualFields = [
   }
 ]
 
-const weatherTypes = [
 
-  {
-    "name": "Sunshine",
-    "emoji": "☀"
-  },
-  {
-    "name": "Cloudy",
-    "emoji": "☁"
-  },
-  {
-    "name": "Rain",
-    "emoji": "🌧"
-  },
-  {
-    "name": "Thunder",
-    "emoji": "⚡"
-  },
-  {
-    "name": "Windy",
-    "emoji": "🌫"
-  }
-]
 
 const setDate = (add: number = 0) => {
   const date = new Date();
@@ -166,11 +145,11 @@ function BetCategory({ data, friends }: any) {
   const [results, setResults] = useState<string[]>([]);
   const [filteredResults, setFilteredResults] = useState<string[]>([]);
   const textInputRef = useRef<any>(null);
-  const numberInputRef = useRef<any>(null);
+  const wagerInputRef = useRef<any>(null);
+  const [noEnoughFunds, setNoEnoughFunds] = useState<boolean>(false);
   const [showAlert , setShowAlert] = useState<boolean>(false);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
-
-
+  
   const handleChangeOnSearch = (e: ChangeEvent<HTMLInputElement>, field: string) => {
     if (field === "Location") {
       if (e.target.value.length === 1) {
@@ -195,27 +174,31 @@ function BetCategory({ data, friends }: any) {
     return results.filter(r => r.toLocaleLowerCase().includes(keyword.toLocaleLowerCase()))
   }
 
-  const handleCloseModal = () => {
+  const resetState = () => {
     setOpenModal(false);
     setFieldSelected("");
     setFilteredResults([]);
     setResults([]);
+    setNoEnoughFunds(false)
+  }
+
+  const handleCloseModal = () => {
+    resetState()
   }
 
   const handleSelectedField = (value: string , ref?:any) => {
     handleSelectedValues(fieldSelected, ref !== undefined ? ref.current.value:value);
-    setOpenModal(false);
-    setFieldSelected("");
-    setFilteredResults([]);
-    setResults([]);
+    resetState()
 
     if (ref !== undefined ) {
       if (ref.current) {
         ref.current.value = "";
       }
     }
+
     
   }
+
   
   const setTimer = (setter: Dispatch<SetStateAction<any>>) => {
     const timer = setTimeout(() => {
@@ -330,12 +313,22 @@ function BetCategory({ data, friends }: any) {
             {(fieldSelected === "Wager") &&
               <>
                 <InputField
-                  ref={numberInputRef}
+                  ref={wagerInputRef}
                   type={"number"}
                   arialLabel={"Wager"}
                   placeHolder={"Add wager"}
-                  btnOnClick={handleSelectedField}
+                  btnOnClick={() => {
+                    if (wagerInputRef.current.value > data.balance ) return setNoEnoughFunds(true)
+                    return handleSelectedField(wagerInputRef.current.value,wagerInputRef)
+                  }}
                 />
+
+                {noEnoughFunds && 
+                  <>
+                    <label className="block text-xs font-semibold leading-6 text-rose-500" >No enough funds</label>
+                  </>
+                  
+                }
               </>
             }
             {showSuccess &&

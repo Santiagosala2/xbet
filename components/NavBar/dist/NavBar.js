@@ -23,7 +23,7 @@ var NavBar = function (_a) {
             react_1["default"].createElement("div", { className: "flex justify-center items-center p-2" },
                 react_1["default"].createElement("div", { className: "basis-4/5 font-semibold cursor-pointer", onClick: function () { return router.push('/dashboard'); } }, "BetMate"),
                 react_1["default"].createElement("div", { className: "basis-1/5" },
-                    react_1["default"].createElement("div", { className: 'flex justify-center items-center my-0 -mx-4' },
+                    react_1["default"].createElement("div", { className: 'flex justify-center items-center my-0 -ml-4' },
                         react_1["default"].createElement("div", { className: userBalanceClassName }, "$" + userBalance),
                         react_1["default"].createElement(NavBarIcons, { marginXY: 'my-0 mx-1', src: '/walletIcon.svg', name: 'Wallet', menuAttached: false, onClick: function () { return router.push('/dashboard/wallet'); } }),
                         react_1["default"].createElement(NavBarIcons, { marginXY: 'my-0 mx-1', src: '/friendsIcon.svg', name: 'Wallet', menuAttached: false, onClick: function () { return router.push('/dashboard/friends'); } }),

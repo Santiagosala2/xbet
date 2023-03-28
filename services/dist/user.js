@@ -27,7 +27,11 @@ var addHeaders = function (method, credentials, body) {
     }
     return object;
 };
-var resolver = function (prom, callback) { return prom.then(function (res) { return res.json(); }).then(function (res) { return callback(res); }); };
+var resolver = function (prom, callback) {
+    return prom.then(function (res) { return res.text(); })
+        .then(function (res) { return res !== "{}" && res !== "" ? JSON.parse(res) : null; })
+        .then(function (res) { return callback(res); });
+};
 var login = function (data, callback) { return resolver(fetch(apiEndpoint + "/api/login", addHeaders("POST", true, data)), callback); };
 var register = function (data, callback) { return resolver(fetch(apiEndpoint + "/api/register", addHeaders("POST", false, data)), callback); };
 var logout = function (callback) { return resolver(fetch("/api/logout", addHeaders("POST", false)), callback); };
