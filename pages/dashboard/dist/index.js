@@ -45,6 +45,7 @@ var Card_1 = require("../../components/Card/Card");
 var router_1 = require("next/router");
 var image_1 = require("next/image");
 var constants_1 = require("../../constants/constants");
+var user_2 = require("../../services/user");
 var formatDate = function (value) {
     var d = new Date(value);
     var ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(d);
@@ -52,7 +53,7 @@ var formatDate = function (value) {
     var da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
     return da + "/" + mo + "/" + ye;
 };
-var weatherPendingBetKeys = [{ key: "betID", name: "Bet Id" }, { key: "type", name: "Type" }, { key: "status", name: "Status" }, { key: "when", name: "When" }, { key: "location", name: "Location" }, { key: "climate", name: "Answer (Climate)" }, { key: "friendName", name: "Friend" }, { key: "wager", name: "Wager" }];
+var weatherPendingBetKeys = [{ key: "betID", name: "Bet Id" }, { key: "type", name: "Type" }, { key: "status", name: "Status" }, { key: "when", name: "When" }, { key: "location", name: "Location" }, { key: "climate", name: "Answer (Climate)" }, { key: "friendName", name: "Friend" }, { key: "friendClimate", name: "Friend answer (Climate)" }, { key: "wager", name: "Wager" }];
 var manualPendingBetKeys = [{ key: "betID", name: "Bet Id" }, { key: "type", name: "Type" }, { key: "status", name: "Status" }, { key: "when", name: "When" }, { key: "judgeName", name: "Judge" }, { key: "friendName", name: "Friend" }, { key: "wager", name: "Wager" }];
 var weatherAwaitingBetKeys = [{ key: "betID", name: "Bet Id" }, { key: "wager", name: "Wager" }, { key: "when", name: "When" }, { key: "location", name: "Location" }, { key: "friendName", name: "Friend" }];
 function Dashboard(_a) {
@@ -92,6 +93,25 @@ function Dashboard(_a) {
             setCurrentBetModalState(state);
         }
     };
+    var refreshData = function () {
+        router.replace(router.asPath);
+    };
+    var handleAcceptBet = function () {
+        if (selectedBet) {
+            user_2["default"].services.acceptBet(selectedBet.betID, { friendClimate: climateAnswer }, function () {
+                setOpenDetailsModal(false);
+                refreshData();
+            });
+        }
+    };
+    var handleRejectBet = function () {
+        if (selectedBet) {
+            user_2["default"].services.rejectBet(selectedBet.betID, function () {
+                setOpenDetailsModal(false);
+                refreshData();
+            });
+        }
+    };
     return (React.createElement(Layout_1["default"], { userBalance: initialBalance },
         React.createElement("div", { className: 'm-7' },
             React.createElement("h5", { className: 'text-2xl text-slate-900 my-2' },
@@ -101,7 +121,7 @@ function Dashboard(_a) {
             React.createElement(Card_1["default"], { name: 'Weather', path: '/weatherIcon.svg', onClick: function () { return router.push('/dashboard/bet/weather'); } }),
             React.createElement(Card_1["default"], { name: 'Manual', path: '/manualIcon.svg', onClick: function () { return router.push('/dashboard/bet/manual'); } }),
             React.createElement("h2", { className: "text-4xl font-bold text-slate-900 mt-6" }, "Pending bets"),
-            React.createElement("div", { className: 'flex' }, bets.pending.map(function (b) { return (React.createElement(Card_1["default"], { key: b.betID, name: b.betID },
+            React.createElement("div", { className: 'flex' }, bets.pending.map(function (b) { return (React.createElement(Card_1["default"], { key: b.betID, name: b.betID, borderColor: b.status === "Pending - Ready" ? selectedClimateAnswerClass : '' },
                 React.createElement(React.Fragment, null,
                     React.createElement(image_1["default"], { className: "w-5 h-5 mb-2 text-slate-900", src: b.type == "weather" ? "/weatherIcon.svg" : "/manualIcon.svg", alt: "", width: 40, height: 40 }),
                     React.createElement("h5", { className: "mb-2 text-sm font-semibold tracking-tight text-slate-900" },
@@ -126,17 +146,17 @@ function Dashboard(_a) {
                                 React.createElement("svg", { "aria-hidden": "true", className: "w-5 h-5", fill: "currentColor", viewBox: "0 0 20 20", xmlns: "http://www.w3.org/2000/svg" },
                                     React.createElement("path", { fillRule: "evenodd", d: "M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z", clipRule: "evenodd" })))),
                         betKeys.map(function (k) {
-                            return React.createElement("div", { key: k.key },
+                            return React.createElement("div", { key: k.key }, selectedBet[k.key] && selectedBet[k.key] !== "" && React.createElement(React.Fragment, null,
                                 React.createElement("label", { className: "block text-sm font-semibold leading-6 text-gray-900 mt-2" }, k.name),
-                                React.createElement("div", { key: selectedBet[k.key], className: "flex-auto  border rounded-md  border-slate-300 px-1" }, k.key === "when" ? formatDate(selectedBet[k.key]).trim() : selectedBet[k.key]));
+                                React.createElement("div", { key: selectedBet[k.key], className: "flex-auto  border rounded-md  border-slate-300 px-1" }, k.key === "when" ? formatDate(selectedBet[k.key]).trim() : selectedBet[k.key])));
                         }),
                         currentBetModalState === "awaiting" &&
                             React.createElement("div", { className: 'my-2' },
                                 React.createElement("label", { className: "block text-sm font-semibold leading-6 text-gray-900 mt-2" }, "Climate answer"),
-                                constants_1.weatherTypes.map(function (t) { return (React.createElement("div", { key: t.name, className: "w-fit p-4 bg-white border border-slate-900 rounded-lg shadow  inline-block my-2 mr-4 cursor-pointer " + (t.name === climateAnswer ? selectedClimateAnswerClass : ''), onClick: function () { return setClimateAnswer(t.name); } }, t.name + " " + t.emoji)); }),
+                                constants_1.weatherTypes.map(function (t) { return (React.createElement("div", { key: t.name, className: "w-fit p-4 bg-white border  rounded-lg shadow  inline-block my-2 mr-4 cursor-pointer " + (t.name === climateAnswer ? selectedClimateAnswerClass : 'border-slate-900'), onClick: function () { return setClimateAnswer(t.name); } }, t.name + " " + t.emoji)); }),
                                 React.createElement("div", { className: 'flex justify-around' },
-                                    React.createElement("button", { type: "button", className: "mt-2 text-white bg-slate-900 border border-gray-300 font-medium rounded-lg text-sm px-5 py-1 border-gray-600 disabled:bg-slate-300", disabled: climateAnswer === null }, "Accept"),
-                                    React.createElement("button", { type: "button", className: "mt-2 text-slate-900 bg-white border border-gray-300 font-medium rounded-lg text-sm px-5 py-1 border-gray-600 disabled:bg-slate-300" }, "Reject")))))))));
+                                    React.createElement("button", { type: "button", className: "mt-2 text-white bg-slate-900 border border-gray-300 font-medium rounded-lg text-sm px-5 py-1 border-gray-600 disabled:bg-slate-300", disabled: climateAnswer === null, onClick: handleAcceptBet }, "Accept"),
+                                    React.createElement("button", { type: "button", className: "mt-2 text-slate-900 bg-white border border-gray-300 font-medium rounded-lg text-sm px-5 py-1 border-gray-600 disabled:bg-slate-300", onClick: handleRejectBet }, "Reject")))))))));
 }
 function getServerSideProps(context) {
     return __awaiter(this, void 0, void 0, function () {

@@ -7,6 +7,7 @@ import Card from '../../components/Card/Card';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { weatherTypes } from '../../constants/constants';
+import user from '../../services/user';
 
 const formatDate = (value: string) => {
   const d = new Date(value)
@@ -16,7 +17,7 @@ const formatDate = (value: string) => {
   return `${da}/${mo}/${ye}`
 }
 
-const weatherPendingBetKeys = [{ key: "betID", name: "Bet Id" }, { key: "type", name: "Type" }, { key: "status", name: "Status" }, { key: "when", name: "When" }, { key: "location", name: "Location" }, { key: "climate", name: "Answer (Climate)" }, { key: "friendName", name: "Friend" }, { key: "wager", name: "Wager" }];
+const weatherPendingBetKeys = [{ key: "betID", name: "Bet Id" }, { key: "type", name: "Type" }, { key: "status", name: "Status" }, { key: "when", name: "When" }, { key: "location", name: "Location" }, { key: "climate", name: "Answer (Climate)" }, { key: "friendName", name: "Friend" }, {key:"friendClimate", name:"Friend answer (Climate)"}, { key: "wager", name: "Wager" }];
 const manualPendingBetKeys = [{ key: "betID", name: "Bet Id" }, { key: "type", name: "Type" }, { key: "status", name: "Status" }, { key: "when", name: "When" }, { key: "judgeName", name: "Judge" }, { key: "friendName", name: "Friend" }, { key: "wager", name: "Wager" }]
 
 const weatherAwaitingBetKeys = [{ key: "betID", name: "Bet Id" }, { key: "wager", name: "Wager" },{ key: "when", name: "When" }, { key: "location", name: "Location" }, { key: "friendName", name: "Friend" }]
@@ -66,6 +67,28 @@ function Dashboard({ data, bets }: any) {
     }
   }
 
+  const refreshData = () => {
+    router.replace(router.asPath);
+  }
+
+  const handleAcceptBet = () => {
+       if (selectedBet) {
+          user.services.acceptBet(selectedBet.betID,{ friendClimate: climateAnswer }, () => {
+            setOpenDetailsModal(false)
+            refreshData()          
+          })
+       }
+  }
+
+  const handleRejectBet = () => {
+       if (selectedBet) {
+        user.services.rejectBet(selectedBet.betID, () => {
+          setOpenDetailsModal(false)
+          refreshData()          
+        })
+       }
+  }
+
   return (
     <Layout userBalance={initialBalance}>
       <div className='m-7'>
@@ -78,13 +101,15 @@ function Dashboard({ data, bets }: any) {
           {bets.pending.map((b: any) => (
             <Card
               key={b.betID}
-              name={b.betID}>
+              name={b.betID}
+              borderColor={b.status === "Pending - Ready" ? selectedClimateAnswerClass : ''}
+              >
               <>
                 <Image className="w-5 h-5 mb-2 text-slate-900" src={b.type == "weather" ? "/weatherIcon.svg" : "/manualIcon.svg"} alt={""} width={40} height={40} />
                 <h5 className="mb-2 text-sm font-semibold tracking-tight text-slate-900">id: {b.betID}</h5>
                 {/* <h5 className="mb-2 text-1xl font-semibold tracking-tight text-slate-900">Waiting {b.friendID}</h5> */}
                 <h5 className="mb-2 text-sm font-semibold tracking-tight text-slate-900">{`for:${formatDate(b.when).trim()}`}</h5>
-                <button type="button" className="mt-2 text-slate-900 bg-white border border-gray-300 font-medium rounded-lg text-sm px-5 py-1 border-gray-600 disabled:bg-slate-300" onClick={() => handleOpenDetailsModal(b, "pending")}>Details</button>
+                <button type="button" className={`mt-2 text-slate-900 bg-white border border-gray-300 font-medium rounded-lg text-sm px-5 py-1 border-gray-600 disabled:bg-slate-300`} onClick={() => handleOpenDetailsModal(b, "pending")}>Details</button>
 
 
               </>
@@ -121,24 +146,29 @@ function Dashboard({ data, bets }: any) {
               </div>
               {betKeys.map(k =>
                 <div key={k.key}>
+                   
+                  {selectedBet[k.key] && selectedBet[k.key] !== "" && <>
+                          
+                      <label className="block text-sm font-semibold leading-6 text-gray-900 mt-2" >{k.name}</label>
+                      <div key={selectedBet[k.key]} className="flex-auto  border rounded-md  border-slate-300 px-1">{k.key === "when"? formatDate(selectedBet[k.key]).trim(): selectedBet[k.key] }</div>
 
-                  <label className="block text-sm font-semibold leading-6 text-gray-900 mt-2" >{k.name}</label>
-                  <div key={selectedBet[k.key]} className="flex-auto  border rounded-md  border-slate-300 px-1">{k.key === "when"? formatDate(selectedBet[k.key]).trim():selectedBet[k.key] }</div>
+                    </> } 
+               
                 </div>
               )}
               {currentBetModalState === "awaiting" &&
                 <div className='my-2'>
                   <label className="block text-sm font-semibold leading-6 text-gray-900 mt-2" >Climate answer</label>
                   {weatherTypes.map(t => (
-                    <div key={t.name} className={`w-fit p-4 bg-white border border-slate-900 rounded-lg shadow  inline-block my-2 mr-4 cursor-pointer ${t.name === climateAnswer ? selectedClimateAnswerClass: ''}`} onClick={() => setClimateAnswer(t.name)}>
+                    <div key={t.name} className={`w-fit p-4 bg-white border  rounded-lg shadow  inline-block my-2 mr-4 cursor-pointer ${t.name === climateAnswer ? selectedClimateAnswerClass: 'border-slate-900'}`} onClick={() => setClimateAnswer(t.name)}>
                       {`${t.name} ${t.emoji}`}
                     </div>)
 
                   )}
                   <div className='flex justify-around'>
 
-                  <button type="button" className="mt-2 text-white bg-slate-900 border border-gray-300 font-medium rounded-lg text-sm px-5 py-1 border-gray-600 disabled:bg-slate-300" disabled={climateAnswer === null}>Accept</button>
-                  <button type="button" className="mt-2 text-slate-900 bg-white border border-gray-300 font-medium rounded-lg text-sm px-5 py-1 border-gray-600 disabled:bg-slate-300" >Reject</button>
+                  <button type="button" className="mt-2 text-white bg-slate-900 border border-gray-300 font-medium rounded-lg text-sm px-5 py-1 border-gray-600 disabled:bg-slate-300" disabled={climateAnswer === null} onClick={handleAcceptBet}>Accept</button>
+                  <button type="button" className="mt-2 text-slate-900 bg-white border border-gray-300 font-medium rounded-lg text-sm px-5 py-1 border-gray-600 disabled:bg-slate-300" onClick={handleRejectBet}>Reject</button>
 
                   </div>
 

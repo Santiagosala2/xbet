@@ -41,6 +41,8 @@ var addFriend = function (data, callback) { return resolver(fetch(apiEndpoint + 
 var acceptRequest = function (data, callback) { return resolver(fetch(apiEndpoint + "/api/user/acceptRequest", addHeaders("POST", true, data)), callback); };
 var rejectRequest = function (data, callback) { return resolver(fetch(apiEndpoint + "/api/user/rejectRequest", addHeaders("POST", true, data)), callback); };
 var createBet = function (data, callback) { return resolver(fetch(apiEndpoint + "/api/user/bets", addHeaders("POST", true, data)), callback); };
+var acceptBet = function (betId, data, callback) { return resolver(fetch(apiEndpoint + "/api/user/bet/" + betId + "/accept", addHeaders("POST", true, data)), callback); };
+var rejectBet = function (betId, callback) { return resolver(fetch(apiEndpoint + "/api/user/bet/" + betId + "/reject", addHeaders("POST", true)), callback); };
 var services = {
     login: login,
     register: register,
@@ -50,7 +52,9 @@ var services = {
     addFriend: addFriend,
     acceptRequest: acceptRequest,
     rejectRequest: rejectRequest,
-    createBet: createBet
+    createBet: createBet,
+    acceptBet: acceptBet,
+    rejectBet: rejectBet
 };
 var user = {
     services: services

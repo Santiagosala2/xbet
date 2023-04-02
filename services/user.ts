@@ -49,6 +49,10 @@ const rejectRequest = <T>(data: T, callback: (res: any) => void) => resolver(fet
 
 const createBet = <T>(data: T, callback: (res: any) => void) => resolver(fetch(`${apiEndpoint}/api/user/bets`, addHeaders("POST", true, data)), callback)
 
+const acceptBet = <T>(betId: string ,data: T , callback: (res: any) => void) => resolver(fetch(`${apiEndpoint}/api/user/bet/${betId}/accept`, addHeaders("POST", true, data)), callback )
+
+const rejectBet = <T>(betId: string , callback: (res: any) => void) => resolver(fetch(`${apiEndpoint}/api/user/bet/${betId}/reject`, addHeaders("POST", true)), callback )
+
 const services = {
     login,
     register,
@@ -58,7 +62,9 @@ const services = {
     addFriend,
     acceptRequest,
     rejectRequest,
-    createBet
+    createBet,
+    acceptBet,
+    rejectBet 
 }
 
 const user = {
