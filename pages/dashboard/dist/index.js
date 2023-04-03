@@ -121,7 +121,7 @@ function Dashboard(_a) {
             React.createElement(Card_1["default"], { name: 'Weather', path: '/weatherIcon.svg', onClick: function () { return router.push('/dashboard/bet/weather'); } }),
             React.createElement(Card_1["default"], { name: 'Manual', path: '/manualIcon.svg', onClick: function () { return router.push('/dashboard/bet/manual'); } }),
             React.createElement("h2", { className: "text-4xl font-bold text-slate-900 mt-6" }, "Pending bets"),
-            React.createElement("div", { className: 'flex' }, bets.pending.map(function (b) { return (React.createElement(Card_1["default"], { key: b.betID, name: b.betID, borderColor: b.status === "Pending - Ready" ? selectedClimateAnswerClass : '' },
+            React.createElement("div", { className: 'flex' }, bets.pending.map(function (b) { return (React.createElement(Card_1["default"], { key: b.betID, name: b.betID, borderColor: b.status.includes("Pending - Ready") ? selectedClimateAnswerClass : '' },
                 React.createElement(React.Fragment, null,
                     React.createElement(image_1["default"], { className: "w-5 h-5 mb-2 text-slate-900", src: b.type == "weather" ? "/weatherIcon.svg" : "/manualIcon.svg", alt: "", width: 40, height: 40 }),
                     React.createElement("h5", { className: "mb-2 text-sm font-semibold tracking-tight text-slate-900" },

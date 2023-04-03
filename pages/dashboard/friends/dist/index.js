@@ -42,13 +42,18 @@ var Layout_1 = require("../../../components/Layout/Layout");
 var user_1 = require("../../../services/user");
 var auth_1 = require("../../api/auth");
 var user_2 = require("../../api/user");
+var router_1 = require("next/router");
 var SuccessAlert_1 = require("../../../components/SuccessAlert/SuccessAlert");
 var SearchBar_1 = require("../../../components/SearchBar/SearchBar");
 function Friends(_a) {
     var data = _a.data, friends = _a.friends;
+    var router = router_1.useRouter();
     var _b = react_1.useState([]), users = _b[0], setUsers = _b[1];
     var _c = react_1.useState(""), searchValue = _c[0], setSearchValue = _c[1];
     var _d = react_1.useState(false), showAlert = _d[0], setShowAlert = _d[1];
+    var refreshData = function () {
+        router.replace(router.asPath);
+    };
     var handleChange = function (e) {
         if (e.target.value.length > 0) {
             user_1["default"].services.searchUsers(e.target.value, function (res) {
@@ -67,6 +72,7 @@ function Friends(_a) {
             user_1["default"].services.searchUsers(searchValue, function (res) {
                 setShowAlert(true);
                 setTimer(setShowAlert);
+                refreshData();
                 return setUsers(res);
             });
         });
@@ -76,6 +82,7 @@ function Friends(_a) {
             user_1["default"].services.searchUsers(searchValue, function (res) {
                 setShowAlert(true);
                 setTimer(setShowAlert);
+                refreshData();
                 return setUsers(res);
             });
         });

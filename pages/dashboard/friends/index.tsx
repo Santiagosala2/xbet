@@ -21,9 +21,14 @@ export type User = {
 }
 
 function Friends({ data , friends }: any) {
+    const router = useRouter();
     const [users, setUsers] = useState<User[]>([]);
     const [searchValue , setSearchValue] = useState<string>("");
     const [showAlert , setShowAlert] = useState<boolean>(false);
+
+    const refreshData = () => {
+        router.replace(router.asPath);
+    }
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.value.length > 0) {
@@ -45,6 +50,7 @@ function Friends({ data , friends }: any) {
             user.services.searchUsers(searchValue, (res: User[]) => {
                 setShowAlert(true);
                 setTimer(setShowAlert);
+                refreshData();
                 return setUsers(res)
             });
         })
@@ -55,6 +61,7 @@ function Friends({ data , friends }: any) {
             user.services.searchUsers(searchValue, (res: User[]) => {
                 setShowAlert(true);
                 setTimer(setShowAlert);
+                refreshData();
                 return setUsers(res)
             });
         })

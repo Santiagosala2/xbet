@@ -102,7 +102,7 @@ function Dashboard({ data, bets }: any) {
             <Card
               key={b.betID}
               name={b.betID}
-              borderColor={b.status === "Pending - Ready" ? selectedClimateAnswerClass : ''}
+              borderColor={b.status.includes("Pending - Ready") ? selectedClimateAnswerClass : ''}
               >
               <>
                 <Image className="w-5 h-5 mb-2 text-slate-900" src={b.type == "weather" ? "/weatherIcon.svg" : "/manualIcon.svg"} alt={""} width={40} height={40} />
